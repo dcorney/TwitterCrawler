@@ -65,10 +65,10 @@ public class SimpleTwitterCrawler {
 	 * Load in pre-created text file of a pack of news hounds. Each line should
 	 * have one twitter ID and one name, comma separated; or else a long comma-separated list on one line.
 	 * The crawler will then fetch tweets from any of these accounts.
-	 */ 
+	 */
 
 	public static long[] importUsersFile(String filename, int maxToRead) {
-
+		//TODO: Move to separate 'utils' class
 		ArrayList<Long> ids = new ArrayList<Long>();
 
 		try {
@@ -181,9 +181,10 @@ public class SimpleTwitterCrawler {
 
 	/**
 	 * Wait until a specified clock-time, e.g. before stating a crawl.
-	 * Specify start time as yyyy-MM-dd HH:mm:ss 
-	 */	
+	 * Specify start time as yyyy-MM-dd HH:mm:ss
+	 */
 	public static void pauseUntil(String startTimeStr){
+		//TODO: Move to separate 'utils' class
 		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
 		Date startTime;
@@ -191,7 +192,7 @@ public class SimpleTwitterCrawler {
 			startTime = sdf.parse(startTimeStr);
 
 			long now = System.currentTimeMillis();
-			while((now-startTime.getTime()<0)){			
+			while((now-startTime.getTime()<0)){
 				if(now-startTime.getTime()<-10000){
 					System.out.println("Will start crawl in " + (startTime.getTime() - now)/60000 + " mins");
 					Thread.sleep(60*1000);
@@ -200,7 +201,7 @@ public class SimpleTwitterCrawler {
 					System.out.print(".");
 					Thread.sleep(1000);
 				}
-				now = System.currentTimeMillis();			
+				now = System.currentTimeMillis();
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -244,7 +245,7 @@ public class SimpleTwitterCrawler {
 
 	}
 
-	
+
 	/**
 	 *  Initialise a new pair of simultaneous crawls
 	 */
@@ -266,7 +267,7 @@ public class SimpleTwitterCrawler {
 		mcList.add(mc);
 		if(thatIdList!=null){		//optionally create second crawler
 			SimpleTwitterCrawler mc2 = new SimpleTwitterCrawler();
-			TwitterApi api2 = makeTwitterApi(twitterConfigFile2);		
+			TwitterApi api2 = makeTwitterApi(twitterConfigFile2);
 			mc2.startCrawl(thatIdList, out2File, api2);
 			mcList.add(mc2);
 		}
@@ -287,8 +288,8 @@ public class SimpleTwitterCrawler {
 	}
 
 	/**
-	 * Initialise a new crawl, based on parameters specified in external crawler.config properties file. 
-	 * If two lists of news hounds (twitter accounts) are given, they will be crawled in parallel. Or a 
+	 * Initialise a new crawl, based on parameters specified in external crawler.config properties file.
+	 * If two lists of news hounds (twitter accounts) are given, they will be crawled in parallel. Or a
 	 * single list can be used on its own.
 	 */
 	public static void initCrawl(){
@@ -304,7 +305,7 @@ public class SimpleTwitterCrawler {
 		try
 		{
 			// the configuration file name
-			String fileName = "config\\crawler.config";            
+			String fileName = "config\\crawler.config";
 			InputStream is = new FileInputStream(fileName);
 			System.out.println("Reading config file: " + fileName);
 
@@ -313,7 +314,7 @@ public class SimpleTwitterCrawler {
 
 			startTime = prop.getProperty("start.date") +" " + prop.getProperty("start.time");
 			String crawlLengthStr = prop.getProperty("duration.mins");
-			
+
 			crawlMins=Integer.parseInt(crawlLengthStr);
 			houndlist1=prop.getProperty("newshounds.1.file");
 			houndlist2=prop.getProperty("newshounds.2.file");
@@ -325,7 +326,7 @@ public class SimpleTwitterCrawler {
 			twitterConfigFile2=prop.getProperty("twitter.2.config");
 			if(twitterConfigFile1!=null){twitterConfigFile1="config\\" +twitterConfigFile1;}
 			if(twitterConfigFile2!=null){twitterConfigFile2="config\\" +twitterConfigFile2;}
-			
+
 			hourlyChunks=false;
 			String hourlyChunksStr=prop.getProperty("hourly.chunks");
 			if(hourlyChunksStr.equalsIgnoreCase("true")){
@@ -354,14 +355,14 @@ public class SimpleTwitterCrawler {
 		String out2File=houndLabel2+"_"+now;
 		try {
 
-			if(hourlyChunks==false){	
+			if(hourlyChunks==false){
 				//one long uninterrupted crawl
 				pairedCrawl(houndlist1, out1File, houndlist2,out2File,crawlMins);
 
 			}else{
-				//series of hour-long chunked crawls. Crawl for an hour, then stop & re-start, saving tweets to a new file each time. 
+				//series of hour-long chunked crawls. Crawl for an hour, then stop & re-start, saving tweets to a new file each time.
 				int numCrawls=(int)(Math.ceil(crawlMins/60.0F));
-				for(int cr=0;cr<numCrawls;cr++){				
+				for(int cr=0;cr<numCrawls;cr++){
 					now = new SimpleDateFormat("ddMMyy_HHmm").format(Calendar.getInstance().getTime());
 					out1File=houndLabel1+"_"+now;
 					out2File=houndLabel2+"_"+now;
@@ -378,6 +379,6 @@ public class SimpleTwitterCrawler {
 	public static void main(String[] args) throws Exception {
 		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.NoOpLog"); //suppress log messages
 		initCrawl();
-		
+
 	}
 }
