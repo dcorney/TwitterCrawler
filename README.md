@@ -1,4 +1,4 @@
 TwitterCrawler
 ==============
 
-Simple crawler, including with multiple lists of accounts.
+Simple crawler based on following a list (or two lists) of Twitter accounts.
